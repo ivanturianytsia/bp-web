@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>View Poll</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.min.css" rel="stylesheet" crossorigin="anonymous">
+
+
+  <script src="//www.google.com/jsapi"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+      <h1 data-field="title">...</h1>
+      <ul id="options"></ul>
+      <div id="chart"></div>
+      <div>
+        <button class="btn btn-danger btn-sm" id="delete">Delete this poll</button>
+      </div>
+    </div>
+    <div class="col-md-4"></div>
+  </div>
+
+  <script type="text/javascript">
+    google.load("visualization", "1.0", {
+      'packages': ['corechart']
+    })
+    google.setOnLoadCallback(function() {
+      $(function() {
+        var chart;
+        var poll = location.href.split("poll=")[1]
+        var update = function() {
+          $.get("http://localhost:8080/" + poll + "?key=abc123", null, null, "json")
+            .done(function(polls) {
+              var poll = polls[0];
+              $("[data-field='title']").text(poll.title);
+              $("#options").empty();
+              for (var o in poll.results) {
+                $("#options").append(
+                  $("<li>").append(
+                    $("<small>").addClass("label label-default").text(poll.results[o]),
+                    " ",
+                    o
+                  )
+                )
+              }
+              if (poll.results) {
+                var data = new google.visualization.DataTable()
+                data.addColumn("string", "Option");
+                data.addColumn("number", "Votes");
+                for (var o in poll.results) {
+                  data.addRow([o, poll.results[o]])
+                }
+                if (!chart) {
+                  chart = new google.visualization.PieChart(document.getElementById('chart'));
+                }
+                chart.draw(data, {
+                  is3D: true
+                })
+              }
+            })
+          window.setTimeout(update, 1000)
+        }
+        update();
+        $("#delete").click(function() {
+          if (confirm("Sure?")) {
+            $.ajax({
+                url: "http://localhost:8080/" + poll + "?key=abc123",
+                type: "DELETE"
+              })
+              .done(function() {
+                location.href = "/";
+              })
+          }
+        })
+      })
+    })
+  </script>
+</body>
+
+</html>
