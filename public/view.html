@@ -36,7 +36,7 @@
         var chart;
         var poll = location.href.split("poll=")[1]
         var update = function() {
-          $.get("http://localhost:8080/" + poll + "?key=abc123", null, null, "json")
+          $.get(":8080/" + poll + "?key=abc123", null, null, "json")
             .done(function(polls) {
               var poll = polls[0];
               $("[data-field='title']").text(poll.title);
@@ -71,7 +71,7 @@
         $("#delete").click(function() {
           if (confirm("Sure?")) {
             $.ajax({
-                url: "http://localhost:8080/" + poll + "?key=abc123",
+                url: ":8080/" + poll + "?key=abc123",
                 type: "DELETE"
               })
               .done(function() {
