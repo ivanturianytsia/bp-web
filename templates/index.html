@@ -24,15 +24,17 @@
 
   <script type="text/javascript">
     $(function() {
+      var host = "{{ .Host }}";
+
       var update = function() {
-        $.get(":8080/polls/?key=abc123", null, null, "json")
+        $.get(host + "/polls/?key=abc123", null, null, "json")
           .done(function(polls) {
             $("#polls").empty();
             for (var p in polls) {
               var poll = polls[p]
               $("#polls").append(
                 $("<li>").append(
-                  $("<a>").attr("href", "view.html?poll=polls/" + poll.id)
+                  $("<a>").attr("href", "/view.html?poll=polls/" + poll.id)
                   .text(poll.title)
                 )
               )

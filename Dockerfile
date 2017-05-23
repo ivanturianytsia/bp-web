@@ -10,6 +10,6 @@ RUN mkdir /web
 WORKDIR /web
 
 ADD ./bin/web_alpine /web/web
-ADD ./public /web/public
+ADD ./templates /web/templates
 
 CMD ["/web/web","-addr=:8080"]
